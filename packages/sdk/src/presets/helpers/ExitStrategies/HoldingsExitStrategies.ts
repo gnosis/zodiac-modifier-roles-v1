@@ -655,6 +655,58 @@ export const EthExitStrategy3 = (
   return permissions
 }
 
+export const WstEthExitStrategy1 = (
+  blockchainId: NetworkId
+): PresetAllowEntry[] => {
+  const permissions: PresetAllowEntry[] = []
+
+  switch (blockchainId) {
+    case 1:
+      permissions.push(
+        ...allowErc20Approve(
+          [mainnetAddresses.wstETH],
+          [mainnetAddresses.cowswap.GPv2_VAULT_RELAYER]
+        ),
+
+        {
+          targetAddress: mainnetAddresses.cowswap.ORDER_SIGNER,
+          signature:
+            "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
+          params: {
+            [0]: staticEqual(mainnetAddresses.wstETH, "address"),
+            [1]: staticEqual(mainnetAddresses.E_ADDRESS, "address"),
+            [2]: staticEqual(AVATAR),
+          },
+          delegatecall: true,
+        }
+      )
+      break
+
+    case 100:
+      permissions.push(
+        ...allowErc20Approve(
+          [gnoAddresses.wstETH],
+          [gnoAddresses.cowswap.GPv2_VAULT_RELAYER]
+        ),
+
+        {
+          targetAddress: gnoAddresses.cowswap.ORDER_SIGNER,
+          signature:
+            "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
+          params: {
+            [0]: staticEqual(gnoAddresses.wstETH, "address"),
+            [1]: staticEqual(gnoAddresses.WETH, "address"),
+            [2]: staticEqual(AVATAR),
+          },
+          delegatecall: true,
+        }
+      )
+      break
+  }
+
+  return permissions
+}
+
 export const HoldingsExitStrategy = (
   blockchainId: NetworkId
 ): PresetAllowEntry[] => {

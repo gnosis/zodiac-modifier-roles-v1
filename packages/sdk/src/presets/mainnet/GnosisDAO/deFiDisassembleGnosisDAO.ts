@@ -6,6 +6,7 @@ import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrate
 import { staticEqual } from "../../helpers/utils"
 import { AVATAR } from "../../placeholders"
 import { USDC, aura, balancer, compound_v2, compound_v3 } from "../addresses"
+import { RolePreset } from "../../types"
 
 const preset = {
   network: 1,

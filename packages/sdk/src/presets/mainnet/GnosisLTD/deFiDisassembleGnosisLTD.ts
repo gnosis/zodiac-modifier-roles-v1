@@ -4,6 +4,7 @@ import { HoldingsExitStrategy } from "../../helpers/ExitStrategies/HoldingsExitS
 import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
 import { AVATAR } from "../../placeholders"
 import { USDC, aura, balancer } from "../addresses"
+import { RolePreset } from "../../types"
 
 const preset = {
   network: 1,

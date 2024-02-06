@@ -20,3 +20,14 @@ export const balancerExitStrategy1 = (
     },
   ]
 }
+
+export const balancerExitStrategy2 = (
+  gauge: string
+): PresetAllowEntry[] => {
+  return [
+    {
+      ...allow.mainnet.balancer.B_50WETH_50AURA_gauge["withdraw(uint256)"],
+      targetAddress: gauge,
+    },
+  ]
+}
