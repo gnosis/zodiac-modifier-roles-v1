@@ -47,6 +47,7 @@
     "apply:ens:eth:swap": "hardhat encodeApplyPresetSwapENS --network mainnet --safe ENS_ETH",
     "apply:ens:eth:spark": "hardhat encodeApplyPresetsSpark --network mainnet --safe ENS_ETH",
     "apply:ens:eth:kpk": "hardhat encodeApplyPresetsTestKPK --network mainnet --safe ENS_ETH",
+    "apply:ens:eth:univ3": "hardhat encodeApplyPresetsTestUniV3 --network mainnet --safe ENS_ETH",
     "apply:ens:eth:maker": "hardhat encodeApplyPresetsTestMaker --network mainnet --safe ENS_ETH",
     "apply:ens:eth:rocket": "hardhat encodeApplyPresetsTestRocket --network mainnet --safe ENS_ETH",
     "apply:ens:eth:testsafe": "hardhat encodeApplyPresetsTestSafe --network mainnet --safe ENS_ETH",

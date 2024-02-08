@@ -1,4 +1,4 @@
-import { balancerExitStrategy1 } from "../../../../src/presets/helpers/ExitStrategies/BalancerExitStrategies"
+import { balancerExitStrategy1 } from "../../helpers/ExitStrategies/BalancerExitStrategies"
 import { AVATAR } from "../../placeholders"
 import { RolePreset } from "../../types"
 

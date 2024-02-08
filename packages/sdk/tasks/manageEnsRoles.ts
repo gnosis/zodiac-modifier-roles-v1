@@ -12,11 +12,12 @@ import { encodeApplyPresetTxBuilder } from "../src/applyPreset"
 import mainnetDeFiHarvestENSPreset from "../src/presets/mainnet/ENS/deFiHarvestENS"
 import mainnetDeFiManageENSPreset from "../src/presets/mainnet/ENS/deFiManageENS"
 import mainnetDeFiSwapENSPreset from "../src/presets/mainnet/ENS/deFiSwapENS"
-// import sparkRepayDebtDAI from "../src/presets/mainnet/ENS/sparkRepayDebtDAI"
-import test_payload_kpk from "../src/presets/mainnet/ENS/test_payload_kpk"
-// import test_payload_maker from "../src/presets/mainnet/ENS/test_payload_maker"
-import test_safe_preset from "../src/presets/mainnet/ENS/TestSafePreset"
-import test_payload_rocket from "../src/presets/mainnet/ENS/test_payload_rocket"
+// import sparkRepayDebtDAI from "../src/presets/mainnet/Test_Presets/sparkRepayDebtDAI"
+import test_payload_kpk from "../src/presets/mainnet/Test_Presets/test_payload_kpk"
+import test_payload_univ3 from "../src/presets/mainnet/Test_Presets/test_uniswapv3"
+// import test_payload_maker from "../src/presets/mainnet/Test_Presets/test_payload_maker"
+import test_safe_preset from "../src/presets/mainnet/Test_Presets/TestSafePreset"
+import test_payload_rocket from "../src/presets/mainnet/Test_Presets/test_payload_rocket"
 import { NetworkId } from "../src/types"
 
 interface Config {
@@ -243,38 +244,38 @@ task("encodeApplyPresetsTestRocket").setAction(async (taskArgs, hre) => {
   console.log(`Transaction builder JSON written to  ${filePath}`)
 })
 
-task("encodeApplyPresetsTestSafe").setAction(async (taskArgs, hre) => {
-  const { config } = await processArgs(taskArgs, hre)
-  const txBatches = await encodeApplyPresetTxBuilder(
-    config.MODULE,
-    config.ROLE_IDS.MANAGER,
-    test_safe_preset,
-    { AVATAR: config.AVATAR },
-    {
-      network: config.NETWORK as NetworkId,
-    }
-  )
+// task("encodeApplyPresetsTestSafe").setAction(async (taskArgs, hre) => {
+//   const { config } = await processArgs(taskArgs, hre)
+//   const txBatches = await encodeApplyPresetTxBuilder(
+//     config.MODULE,
+//     config.ROLE_IDS.MANAGER,
+//     test_safe_preset,
+//     { AVATAR: config.AVATAR },
+//     {
+//       network: config.NETWORK as NetworkId,
+//     }
+//   )
 
-  const filePath = path.join(
-    __dirname,
-    "..",
-    "/presets-output/mainnet/ENS/test_safe_payload.json"
-  )
-  if (!existsSync(filePath)) {
-    // Create the directory structure if it doesn't exist
-    mkdirSync(path.dirname(filePath), { recursive: true })
-  }
-  // Write the JSON data to the file
-  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
-  console.log(`Transaction builder JSON written to  ${filePath}`)
-})
+//   const filePath = path.join(
+//     __dirname,
+//     "..",
+//     "/presets-output/mainnet/ENS/test_safe_payload.json"
+//   )
+//   if (!existsSync(filePath)) {
+//     // Create the directory structure if it doesn't exist
+//     mkdirSync(path.dirname(filePath), { recursive: true })
+//   }
+//   // Write the JSON data to the file
+//   writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+//   console.log(`Transaction builder JSON written to  ${filePath}`)
+// })
 
-task("encodeApplyPresetsTestKPK").setAction(async (taskArgs, hre) => {
+task("encodeApplyPresetsTestUniV3").setAction(async (taskArgs, hre) => {
   const { config } = await processArgs(taskArgs, hre)
   const txBatches = await encodeApplyPresetTxBuilder(
     config.MODULE,
     config.ROLE_IDS.REVOKER,
-    test_payload_kpk,
+    test_payload_univ3,
     { AVATAR: config.AVATAR },
     {
       network: config.NETWORK as NetworkId,
@@ -284,7 +285,7 @@ task("encodeApplyPresetsTestKPK").setAction(async (taskArgs, hre) => {
   const filePath = path.join(
     __dirname,
     "..",
-    "/presets-output/mainnet/ENS/test_payload_kpk.json"
+    "/presets-output/mainnet/ENS/test_uniswapv3.json"
   )
   if (!existsSync(filePath)) {
     // Create the directory structure if it doesn't exist
