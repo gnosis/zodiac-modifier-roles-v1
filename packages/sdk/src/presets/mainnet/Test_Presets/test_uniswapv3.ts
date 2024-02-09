@@ -27,6 +27,12 @@ const preset = {
 
     {
       targetAddress: uniswapv3.POSITIONS_NFT,
+      signature: "increaseLiquidity((uint256,uint256,uint256,uint256,uint256,uint256))",
+      send: true
+    },
+
+    {
+      targetAddress: uniswapv3.POSITIONS_NFT,
       signature: "decreaseLiquidity((uint256,uint128,uint256,uint256,uint256))",
     },
 
