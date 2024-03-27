@@ -41,8 +41,8 @@ interface Config {
 
 export const ENS_ADDRESSES = {
   ENS_ETH: {
-    AVATAR: "0x4F2083f5fBede34C2714aFfb3105539775f7FE64", //"0xC01318baB7ee1f5ba734172bF7718b5DC6Ec90E1", //"0x4F2083f5fBede34C2714aFfb3105539775f7FE64",
-    MODULE: "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B", //"0x1ffAdc16726dd4F91fF275b4bF50651801B06a86", //"0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
+    AVATAR: "0x4F2083f5fBede34C2714aFfb3105539775f7FE64", //"0xC01318baB7ee1f5ba734172bF7718b5DC6Ec90E1", "0x4F2083f5fBede34C2714aFfb3105539775f7FE64", "0x58e6c7ab55Aa9012eAccA16d1ED4c15795669E1C"
+    MODULE: "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B", //"0x1ffAdc16726dd4F91fF275b4bF50651801B06a86", "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B", "0xb423e0f6E7430fa29500c5cC9bd83D28c8BD8978"
     MANAGER: "0xb423e0f6E7430fa29500c5cC9bd83D28c8BD8978",
     REVOKER: "",
     HARVESTER: "0x14c2d2d64c4860acf7cf39068eb467d7556197de",
@@ -269,6 +269,32 @@ task("encodeApplyPresetsTestRocket").setAction(async (taskArgs, hre) => {
 //   writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
 //   console.log(`Transaction builder JSON written to  ${filePath}`)
 // })
+
+task("encodeApplyPresetsTestKPK").setAction(async (taskArgs, hre) => {
+  const { config } = await processArgs(taskArgs, hre)
+  const txBatches = await encodeApplyPresetTxBuilder(
+    config.MODULE,
+    config.ROLE_IDS.MANAGER,
+    test_payload_kpk,
+    { AVATAR: config.AVATAR },
+    {
+      network: config.NETWORK as NetworkId,
+    }
+  )
+
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "/presets-output/mainnet/ENS/test_payload_kpk.json"
+  )
+  if (!existsSync(filePath)) {
+    // Create the directory structure if it doesn't exist
+    mkdirSync(path.dirname(filePath), { recursive: true })
+  }
+  // Write the JSON data to the file
+  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+  console.log(`Transaction builder JSON written to  ${filePath}`)
+})
 
 task("encodeApplyPresetsTestUniV3").setAction(async (taskArgs, hre) => {
   const { config } = await processArgs(taskArgs, hre)

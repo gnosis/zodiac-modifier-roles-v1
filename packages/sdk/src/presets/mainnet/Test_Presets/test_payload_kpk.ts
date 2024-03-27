@@ -1,8 +1,10 @@
 import {
+  stETH,
   ZERO_ADDRESS,
   aura,
   balancer,
-  cowswap
+  cowswap,
+  E_ADDRESS
 } from "../addresses"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
 import { allowErc20Approve } from "../../helpers/erc20"
@@ -43,19 +45,21 @@ const preset = {
     // // Unstake
     // allow.mainnet.balancer.B_stETH_stable_gauge["withdraw(uint256)"](),
 
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Cowswap
-    // //---------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Cowswap
+    //---------------------------------------------------------------------------------------------------------------------------------
 
-    // {
-    //   targetAddress: cowswap.ORDER_SIGNER,
-    //   signature:
-    //     "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
-    //   params: {
-    //     [2]: staticEqual(AVATAR),
-    //   },
-    //   delegatecall: true,
-    // },
+    {
+      targetAddress: cowswap.ORDER_SIGNER,
+      signature:
+        "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
+      params: {
+        // [0]: staticEqual(stETH, "address"),
+        // [1]: staticEqual(E_ADDRESS, "address"),
+        [2]: staticEqual(AVATAR),
+      },
+      delegatecall: true,
+    },
   ],
   placeholders: { AVATAR },
 } satisfies RolePreset
