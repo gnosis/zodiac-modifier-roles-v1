@@ -9,10 +9,16 @@ import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { Roles } from "../../evm/typechain-types"
 import addMembers from "../src/addMembers"
 import { encodeApplyPresetTxBuilder } from "../src/applyPreset"
+
+// Balancer in Mainnet
 import mainnetDeFiHarvestBalancerPreset from "../src/presets/mainnet/Balancer/deFiHarvestBalancer"
 import mainnetDeFiManageBalancerPreset from "../src/presets/mainnet/Balancer/deFiManageBalancer"
 import mainnetDeFiManageBalancerAlternativePreset from "../src/presets/mainnet/Balancer/deFiManageBalancerAlternative"
 import mainnetDeFiSwapBalancerPreset from "../src/presets/mainnet/Balancer/deFiSwapBalancer"
+
+// Balancer in Gnosis Chain
+import gnosisDeFiManagerBalancerPreset from "../src/presets/gnosisChain/Balancer/deFiManagerBalancer"
+
 import { NetworkId } from "../src/types"
 
 interface Config {
@@ -62,6 +68,25 @@ export const BALANCER_ADDRESSES = {
     DISASSEMBLER: "",
     SWAPPER: "0x14c2d2d64c4860acf7cf39068eb467d7556197de",
     NETWORK: 1,
+    BRIDGED_SAFE: "0x0000000000000000000000000000000000000000",
+    ROLE_IDS: {
+      MANAGER: 1,
+      REVOKER: 2,
+      HARVESTER: 3,
+      DISASSEMBLER: 4,
+      SWAPPER: 5,
+    },
+  },
+
+  BALANCER_GNO: {
+    AVATAR: "0x3dA6e9ABB753d16F0263C448D1DEBaEF9fad087f",
+    MODULE: "0xB39374e9441d345EB4CDC51A8b19c4d6B74039BE",
+    MANAGER: "0xE7D2AfC3e486BDaA2476d665A6A19C4B75791e7A",
+    REVOKER: "",
+    HARVESTER: "",
+    DISASSEMBLER: "",
+    SWAPPER: "",
+    NETWORK: 100,
     BRIDGED_SAFE: "0x0000000000000000000000000000000000000000",
     ROLE_IDS: {
       MANAGER: 1,
@@ -352,5 +377,38 @@ task("encodeApplyPresetManageBalancerAlternative").setAction(
     console.log(
       `Transaction builder JSON written to packages/sdk/txDataManageBalancerAlternative.json`
     )
+  }
+)
+
+//-----------------------------------------------------------------------------------------------------------------------------
+// Balancer - Gnosis Chain
+//-----------------------------------------------------------------------------------------------------------------------------
+
+task("encodeApplyPresetManageBalancergnosis").setAction(
+  async (taskArgs, hre) => {
+    const { config } = await processArgs(taskArgs, hre)
+    const txBatches = await encodeApplyPresetTxBuilder(
+      config.MODULE,
+      1,
+      gnosisDeFiManagerBalancerPreset,
+      { AVATAR: config.AVATAR },
+      {
+        network: config.NETWORK as NetworkId,
+      }
+    )
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "/presets-output/gnosis/Balancer/txDataManageBalancergnosis.json"
+    )
+    // Check if the file exists
+    if (!existsSync(filePath)) {
+      // Create the directory structure if it doesn't exist
+      mkdirSync(path.dirname(filePath), { recursive: true })
+    }
+    // Write the JSON data to the file
+    writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+    console.log(`Transaction builder JSON written to  ${filePath}`)
   }
 )
