@@ -244,31 +244,31 @@ task("encodeApplyPresetsTestRocket").setAction(async (taskArgs, hre) => {
   console.log(`Transaction builder JSON written to  ${filePath}`)
 })
 
-// task("encodeApplyPresetsTestSafe").setAction(async (taskArgs, hre) => {
-//   const { config } = await processArgs(taskArgs, hre)
-//   const txBatches = await encodeApplyPresetTxBuilder(
-//     config.MODULE,
-//     config.ROLE_IDS.MANAGER,
-//     test_safe_preset,
-//     { AVATAR: config.AVATAR },
-//     {
-//       network: config.NETWORK as NetworkId,
-//     }
-//   )
+task("encodeApplyPresetsTestSafe").setAction(async (taskArgs, hre) => {
+  const { config } = await processArgs(taskArgs, hre)
+  const txBatches = await encodeApplyPresetTxBuilder(
+    config.MODULE,
+    config.ROLE_IDS.MANAGER,
+    test_safe_preset,
+    { AVATAR: config.AVATAR },
+    {
+      network: config.NETWORK as NetworkId,
+    }
+  )
 
-//   const filePath = path.join(
-//     __dirname,
-//     "..",
-//     "/presets-output/mainnet/ENS/test_safe_payload.json"
-//   )
-//   if (!existsSync(filePath)) {
-//     // Create the directory structure if it doesn't exist
-//     mkdirSync(path.dirname(filePath), { recursive: true })
-//   }
-//   // Write the JSON data to the file
-//   writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
-//   console.log(`Transaction builder JSON written to  ${filePath}`)
-// })
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "/presets-output/mainnet/ENS/test_safe_payload.json"
+  )
+  if (!existsSync(filePath)) {
+    // Create the directory structure if it doesn't exist
+    mkdirSync(path.dirname(filePath), { recursive: true })
+  }
+  // Write the JSON data to the file
+  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+  console.log(`Transaction builder JSON written to  ${filePath}`)
+})
 
 task("encodeApplyPresetsTestKPK").setAction(async (taskArgs, hre) => {
   const { config } = await processArgs(taskArgs, hre)
