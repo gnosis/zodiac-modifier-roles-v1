@@ -1,12 +1,25 @@
-import { allow } from "../../allow"
-import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategies"
-import { HoldingsExitStrategy } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
-import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
-import { AVATAR } from "../../placeholders"
-import { DAI, USDC, USDT, rETH, stETH, WETH, wstETH, aura, balancer, curve, uniswapv3 } from "../addresses"
-import { RolePreset } from "../../types"
-import { allowErc20Approve } from "../../helpers/erc20"
+import {
+  DAI,
+  USDC,
+  USDT,
+  rETH,
+  stETH,
+  WETH,
+  wstETH,
+  E_ADDRESS,
+  aura,
+  balancer,
+  cowswap,
+  curve,
+  uniswapv3
+} from "../addresses"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
+import { allowErc20Approve } from "../../helpers/erc20"
+import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
+import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategies"
+import { AVATAR } from "../../placeholders"
+import { RolePreset } from "../../types"
+import { allow } from "../../allow"
 
 const preset = {
   network: 1,
@@ -14,37 +27,20 @@ const preset = {
     //---------------------------------------------------------------------------------------------------------------------------------
     // Lido
     //---------------------------------------------------------------------------------------------------------------------------------
-
     ...lidoExitStrategyAll(),
 
     //---------------------------------------------------------------------------------------------------------------------------------
-    // Holdings
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    ...HoldingsExitStrategy(1), // 1 = mainnet
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // AURA
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Aura COW/WETH + Balancer COW/WETH
+    // Aura wstETH/WETH  + Balancer wstETH/WETH
     //---------------------------------------------------------------------------------------------------------------------------------
 
     ...auraExitStrategy2(
-      aura.aura50COW_50WETH_REWARDER,
-      balancer.B_50COW_50WETH_pId
+      aura.auraB_stETH_STABLE_REWARDER,
+      balancer.B_stETH_STABLE_pId
     ),
 
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Locking AURA
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Process Expired AURA Locks - True -> Relock Expired Locks / False -> Withdraw Expired Locks
-    allow.mainnet.aura.aura_locker["processExpiredLocks"](),
-
-    // Withdraw funds in emergency state (isShutdown = True)
-    allow.mainnet.aura.aura_locker["emergencyWithdraw"](),
+    // allow.mainnet.lido.stETH["submit"](ZERO_ADDRESS, {
+    //   send: true,
+    // }),
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // BALANCER
@@ -175,17 +171,6 @@ const preset = {
         ), // bytes (userData) = for all current Balancer pools this can be left empty
       },
     },
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V3
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V3 - USDC
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Withdraw/Borrow
-    allow.mainnet.compound_v3.cUSDCv3["withdraw"](USDC),
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // Curve - 3pool - Swaps

@@ -3,10 +3,11 @@ import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategi
 import { balancerExitStrategy1 } from "../../helpers/ExitStrategies/BalancerExitStrategies"
 import { HoldingsExitStrategy } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
 import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
-import { staticEqual } from "../../helpers/utils"
+import { staticEqual, staticOneOf } from "../../helpers/utils"
 import { AVATAR } from "../../placeholders"
-import { USDC, aura, balancer, compound_v2, compound_v3 } from "../addresses"
+import { DAI, USDC, USDT, rETH, stETH, WETH, wstETH, aura, balancer, compound_v2, compound_v3, curve, uniswapv3 } from "../addresses"
 import { RolePreset } from "../../types"
+import { allowErc20Approve } from "../../helpers/erc20"
 
 const preset = {
   network: 1,
@@ -22,15 +23,6 @@ const preset = {
     //---------------------------------------------------------------------------------------------------------------------------------
 
     ...HoldingsExitStrategy(1), // 1 = mainnet
-
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aura wstETH/WETH  + Balancer wstETH/WETH
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // ...auraExitStrategy2(
-    //   aura.auraB_stETH_STABLE_REWARDER,
-    //   balancer.B_stETH_STABLE_pId
-    // ),
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // Aura B-80BAL-20WETH/auraBAL + Balancer B-80BAL-20WETH/auraBAL + Balancer B-80BAL-20WETH
@@ -53,15 +45,6 @@ const preset = {
       balancer.B_rETH_STABLE_pId
     ),
 
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aura GNO/WETH + Balancer GNO/WETH
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // ...auraExitStrategy2(
-    //   aura.auraB_80GNO_20WETH_REWARDER,
-    //   balancer.B_80GNO_20WETH_pId
-    // ),
-
     //---------------------------------------------------------------------------------------------------------------------------------
     // Aura GNO/COW + Balancer GNO/COW
     //---------------------------------------------------------------------------------------------------------------------------------
@@ -71,24 +54,6 @@ const preset = {
       balancer.B_50COW_50GNO_pId
     ),
 
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aura LDO/wstETH + Balancer LDO/wstETH
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // ...auraExitStrategy2(
-    //   aura.aura50WSTETH_50LDO_REWARDER,
-    //   balancer.B_50WSTETH_50LDO_pId
-    // ),
-
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aura WETH/AURA + Balancer WETH/AURA
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // ...auraExitStrategy2(
-    //   aura.aura50WETH_50AURA_REWARDER,
-    //   balancer.B_50WETH_50AURA_pId
-    // ),
-
     //---------------------------------------------------------------------------------------------------------------------------------
     // Aura WETH/COW + Balancer WETH/COW
     //---------------------------------------------------------------------------------------------------------------------------------
@@ -97,24 +62,6 @@ const preset = {
       aura.aura50COW_50WETH_REWARDER,
       balancer.B_50COW_50WETH_pId
     ),
-
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aura GHO/3pool + Balancer GHO/3pool + Balancer 3pool
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // ...auraExitStrategy2(aura.auraGHO_3POOL_REWARDER, balancer.B_GHO_3POOL_pId),
-
-    // // Remove Liquidity from 3pool
-    // {
-    //   targetAddress: balancer.VAULT,
-    //   signature:
-    //     "exitPool(bytes32,address,address,(address[],uint256[],bytes,bool))",
-    //   params: {
-    //     [0]: staticEqual(balancer.B_USDC_DAI_USDT_pId, "bytes32"), // Balancer PoolId
-    //     [1]: staticEqual(AVATAR),
-    //     [2]: staticEqual(AVATAR),
-    //   },
-    // },
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // Classic auraBAL
@@ -152,6 +99,132 @@ const preset = {
 
     // Unlock
     allow.mainnet.balancer.veBAL["withdraw"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Balancer rETH/WETH - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Swap rETH for WETH
+    ...allowErc20Approve([rETH], [balancer.VAULT]),
+    {
+      targetAddress: balancer.VAULT,
+      signature:
+        "swap((bytes32,uint8,address,address,uint256,bytes),(address,bool,address,bool),uint256,uint256)",
+      params: {
+        [0]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000e0",
+          "bytes32"
+        ), // Offset of the tuple from beginning 224=32*7
+        [1]: staticEqual(AVATAR), // recipient
+        [3]: staticEqual(AVATAR), // sender
+        [7]: staticEqual(
+          "0x1e19cf2d73a72ef1332c882f20534b6519be0276000200000000000000000112",
+          "bytes32"
+        ), // rETH-WETH pool ID
+        [9]: staticEqual(rETH, "address"), // Asset in
+        [10]: staticEqual(WETH, "address"), // Asset out
+        [12]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000c0",
+          "bytes32"
+        ), // Offset of bytes from beginning of tuple 192=32*6
+        [13]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "bytes32"
+        ), // bytes (userData) = for all current Balancer pools this can be left empty
+      },
+    },
+
+    // Swap WETH for rETH
+    ...allowErc20Approve([WETH], [balancer.VAULT]),
+    {
+      targetAddress: balancer.VAULT,
+      signature:
+        "swap((bytes32,uint8,address,address,uint256,bytes),(address,bool,address,bool),uint256,uint256)",
+      params: {
+        [0]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000e0",
+          "bytes32"
+        ), // Offset of the tuple from beginning 224=32*7
+        [1]: staticEqual(AVATAR), // recipient
+        [3]: staticEqual(AVATAR), // sender
+        [7]: staticEqual(
+          "0x1e19cf2d73a72ef1332c882f20534b6519be0276000200000000000000000112",
+          "bytes32"
+        ), // rETH-WETH pool ID
+        [9]: staticEqual(WETH, "address"), // Asset in
+        [10]: staticEqual(rETH, "address"), // Asset out
+        [12]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000c0",
+          "bytes32"
+        ), // Offset of bytes from beginning of tuple 192=32*6
+        [13]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "bytes32"
+        ), // bytes (userData) = for all current Balancer pools this can be left empty
+      },
+    },
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Balancer wstETH/WETH - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Swap wstETH for WETH
+    ...allowErc20Approve([wstETH], [balancer.VAULT]),
+    {
+      targetAddress: balancer.VAULT,
+      signature:
+        "swap((bytes32,uint8,address,address,uint256,bytes),(address,bool,address,bool),uint256,uint256)",
+      params: {
+        [0]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000e0",
+          "bytes32"
+        ), // Offset of the tuple from beginning 224=32*7
+        [1]: staticEqual(AVATAR), // recipient
+        [3]: staticEqual(AVATAR), // sender
+        [7]: staticEqual(
+          "0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd0000000000000000000005c2",
+          "bytes32"
+        ), // wstETH-WETH pool ID
+        [9]: staticEqual(wstETH, "address"), // Asset in
+        [10]: staticEqual(WETH, "address"), // Asset out
+        [12]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000c0",
+          "bytes32"
+        ), // Offset of bytes from beginning of tuple 192=32*6
+        [13]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "bytes32"
+        ), // bytes (userData) = for all current Balancer pools this can be left empty
+      },
+    },
+
+    // Swap WETH for wstETH
+    ...allowErc20Approve([WETH], [balancer.VAULT]),
+    {
+      targetAddress: balancer.VAULT,
+      signature:
+        "swap((bytes32,uint8,address,address,uint256,bytes),(address,bool,address,bool),uint256,uint256)",
+      params: {
+        [0]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000e0",
+          "bytes32"
+        ), // Offset of the tuple from beginning 224=32*7
+        [1]: staticEqual(AVATAR), // recipient
+        [3]: staticEqual(AVATAR), // sender
+        [7]: staticEqual(
+          "0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd0000000000000000000005c2",
+          "bytes32"
+        ), // wstETH-WETH pool ID
+        [9]: staticEqual(WETH, "address"), // Asset in
+        [10]: staticEqual(wstETH, "address"), // Asset out
+        [12]: staticEqual(
+          "0x00000000000000000000000000000000000000000000000000000000000000c0",
+          "bytes32"
+        ), // Offset of bytes from beginning of tuple 192=32*6
+        [13]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "bytes32"
+        ), // bytes (userData) = for all current Balancer pools this can be left empty
+      },
+    },
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // CONVEX
@@ -255,6 +328,27 @@ const preset = {
     allow.mainnet.curve.cDAIcUSDC_gauge["withdraw"](),
 
     //---------------------------------------------------------------------------------------------------------------------------------
+    // Curve - 3pool - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    ...allowErc20Approve([DAI, USDC, USDT], [curve.x3CRV_POOL]),
+
+    allow.mainnet.curve.x3CRV_pool["exchange"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Curve - ETH/stETH (steCRV) - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    ...allowErc20Approve([stETH], [curve.stETH_ETH_POOL]),
+
+    allow.mainnet.curve.steth_eth_pool["exchange"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Curve - ETH/stETH (stETH-ng-f) - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    ...allowErc20Approve([stETH], [curve.stETH_ng_f_POOL]),
+
+    allow.mainnet.curve.steth_ng_f_pool["exchange(int128,int128,uint256,uint256)"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
     // Compound V2
     //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -343,44 +437,30 @@ const preset = {
       },
     },
 
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Spark
-    // //---------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Uniswap V3 - Swaps
+    //---------------------------------------------------------------------------------------------------------------------------------
+    ...allowErc20Approve([DAI, USDC, USDT, WETH, wstETH], [uniswapv3.ROUTER_2]),
 
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Spark - wstETH
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // // Withdraw
-    // allow.mainnet.spark.sparkLendingPoolV3["withdraw"](
-    //   wstETH,
-    //   undefined,
-    //   AVATAR
-    // ),
-
-    // // Repay - DAI
-    // ...allowErc20Approve([DAI], [spark.LENDING_POOL_V3]),
-    // allow.mainnet.spark.sparkLendingPoolV3["repay"](
-    //   DAI,
-    //   undefined,
-    //   undefined,
-    //   AVATAR
-    // ),
-
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aave V3
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // //---------------------------------------------------------------------------------------------------------------------------------
-    // // Aave V3 - wstETH
-    // //---------------------------------------------------------------------------------------------------------------------------------
-
-    // // Withdraw
-    // allow.mainnet.aave_v3.pool_v3["withdraw"](wstETH, undefined, AVATAR),
-
-    // // Repay - WBTC
-    // ...allowErc20Approve([WBTC], [aave_v3.POOL_V3]),
-    // allow.mainnet.aave_v3.pool_v3["repay"](WBTC, undefined, undefined, AVATAR),
+    {
+      targetAddress: uniswapv3.ROUTER_2,
+      signature:
+        "exactInputSingle((address,address,uint24,address,uint256,uint256,uint160))",
+      params: {
+        [0]: staticOneOf(
+          [
+            DAI,
+            USDC,
+            USDT,
+            WETH,
+            wstETH
+          ],
+          "address"
+        ),
+        [1]: staticOneOf([DAI, USDC, USDT, WETH, wstETH], "address"),
+        [3]: staticEqual(AVATAR),
+      },
+    },
   ],
   placeholders: { AVATAR },
 } satisfies RolePreset

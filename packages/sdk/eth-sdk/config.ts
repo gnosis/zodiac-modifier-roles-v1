@@ -113,6 +113,7 @@ export default defineConfig({
         x3CRV_pool: "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
         cvxETH_pool: "0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4",
         ankrETH_pool: "0xA96A65c051bF88B4095Ee1f2451C2A9d43F53Ae2",
+        steth_ng_f_pool: "0x21E27a5E5513D6e65C4f830167390997aA84843a",
       },
       idle: {
         stEthCdo: "0x34dCd573C5dE4672C8248cd12A99f875Ca112Ad8",

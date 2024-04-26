@@ -228,6 +228,8 @@ export const curve = {
   cxvETH_POOL: "0xb576491f1e6e5e62f1d8f26062ee822b40b0e0d4",
 
   ankrETH_POOL: "0xA96A65c051bF88B4095Ee1f2451C2A9d43F53Ae2",
+
+  stETH_ng_f_POOL: "0x21E27a5E5513D6e65C4f830167390997aA84843a"
 }
 
 export const lido = {

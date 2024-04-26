@@ -1,6 +1,6 @@
 import "@nomiclabs/hardhat-ethers"
 
-import { writeFileSync } from "fs"
+import { writeFileSync, existsSync, mkdirSync } from "fs"
 import path from "path"
 
 import { task as baseTask, types } from "hardhat/config"
@@ -11,6 +11,7 @@ import addMembers from "../src/addMembers"
 import { encodeApplyPresetTxBuilder } from "../src/applyPreset"
 // import gnosisChainDeFiHarvestPreset from "../src/presets/gnosisChain/deFiHarvest"
 // import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManage"
+import mainnetDeFiDisassembleKPKPreset from "../src/presets/mainnet/KPK/deFiDisassembleKPK"
 import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManageTest"
 import mainnetDeFiManageTestPreset from "../src/presets/mainnet/deFiManageTest"
 import { NetworkId } from "../src/types"
@@ -34,11 +35,11 @@ interface Config {
   }
 }
 
-export const KARPATKEY_ADDRESSES = {
+export const KPK_ADDRESSES = {
   KPK_ETH: {
     AVATAR: "0x58e6c7ab55Aa9012eAccA16d1ED4c15795669E1C",
-    MODULE: "",
-    MANAGER: "",
+    MODULE: "0x8C33ee6E439C874713a9912f3D3debfF1Efb90Da",
+    MANAGER: "0x8072470f155c69c0706dd6016d6720d7eb0438fb", // Used as DISASSEMBLER
     REVOKER: "",
     HARVESTER: "",
     DISASSEMBLER: "",
@@ -111,16 +112,16 @@ const task = (name: string) =>
 
 const processArgs = async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
   const { dryRun, safe } = taskArgs
-  if (!(safe in KARPATKEY_ADDRESSES)) {
+  if (!(safe in KPK_ADDRESSES)) {
     throw new Error(`safe param value '${safe}' not supported`)
   }
-  const safeKey = safe as keyof typeof KARPATKEY_ADDRESSES
-  if (hre.network.config.chainId !== KARPATKEY_ADDRESSES[safeKey].NETWORK) {
+  const safeKey = safe as keyof typeof KPK_ADDRESSES
+  if (hre.network.config.chainId !== KPK_ADDRESSES[safeKey].NETWORK) {
     throw new Error(`using wrong network!`)
   }
   const roles = await getContract(safe, hre)
 
-  return { dryRun, safe, roles, config: KARPATKEY_ADDRESSES[safeKey] }
+  return { dryRun, safe, roles, config: KPK_ADDRESSES[safeKey] }
 }
 
 const getContract = async (safe: string, hre: HardhatRuntimeEnvironment) => {
@@ -236,43 +237,28 @@ task("encodeApplyPresetManageTestGNO").setAction(async (taskArgs, hre) => {
   )
 })
 
-// task("encodeApplyPresetManage").setAction(async (taskArgs, hre) => {
-//   const { config } = await processArgs(taskArgs, hre)
-//   const txBatches = await encodeApplyPresetTxBuilder(
-//     config.MODULE,
-//     1,
-//     gnosisChainDeFiManagePreset, // TODO use mainnetDeFiManagePreset if on mainnet
-//     {
-//       BRIDGE_RECIPIENT_MAINNET: config.BRIDGED_SAFE,
-//       AVATAR: config.AVATAR,
-//     },
-//     {
-//       network: config.NETWORK as NetworkId,
-//     }
-//   )
+task("encodeApplyPresetsDisassembleKPKmainnet").setAction(async (taskArgs, hre) => {
+  const { config } = await processArgs(taskArgs, hre)
+  const txBatches = await encodeApplyPresetTxBuilder(
+    config.MODULE,
+    config.ROLE_IDS.MANAGER,
+    mainnetDeFiDisassembleKPKPreset,
+    { AVATAR: config.AVATAR },
+    {
+      network: config.NETWORK as NetworkId,
+    }
+  )
 
-//   writeFileSync(
-//     path.join(__dirname, "..", "txData.json"),
-//     JSON.stringify(txBatches, undefined, 2)
-//   )
-//   console.log(`Transaction builder JSON written to packages/sdk/txData.json`)
-// })
-
-// task("encodeApplyPresetHarvest").setAction(async (taskArgs, hre) => {
-//   const { config } = await processArgs(taskArgs, hre)
-//   const txBatches = await encodeApplyPresetTxBuilder(
-//     config.MODULE,
-//     2,
-//     gnosisChainDeFiHarvestPreset, // TODO use mainnetDeFiHarvestPreset if on mainnet
-//     { AVATAR: config.AVATAR },
-//     {
-//       network: config.NETWORK as NetworkId,
-//     }
-//   )
-
-//   writeFileSync(
-//     path.join(__dirname, "..", "txData.json"),
-//     JSON.stringify(txBatches, undefined, 2)
-//   )
-//   console.log(`Transaction builder JSON written to packages/sdk/txData.json`)
-// })
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "/presets-output/mainnet/KPK/txDataDisassembleKPKmainnet.json"
+  )
+  if (!existsSync(filePath)) {
+    // Create the directory structure if it doesn't exist
+    mkdirSync(path.dirname(filePath), { recursive: true })
+  }
+  // Write the JSON data to the file
+  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+  console.log(`Transaction builder JSON written to  ${filePath}`)
+})

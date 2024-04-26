@@ -13,7 +13,6 @@ import mainnetDeFiHarvestENSPreset from "../src/presets/mainnet/ENS/deFiHarvestE
 import mainnetDeFiManageENSPreset from "../src/presets/mainnet/ENS/deFiManageENS"
 import mainnetDeFiSwapENSPreset from "../src/presets/mainnet/ENS/deFiSwapENS"
 // import sparkRepayDebtDAI from "../src/presets/mainnet/Test_Presets/sparkRepayDebtDAI"
-import test_payload_kpk from "../src/presets/mainnet/Test_Presets/test_payload_kpk"
 import test_payload_univ3 from "../src/presets/mainnet/Test_Presets/test_uniswapv3"
 // import test_payload_maker from "../src/presets/mainnet/Test_Presets/test_payload_maker"
 import test_safe_preset from "../src/presets/mainnet/Test_Presets/TestSafePreset"
@@ -260,32 +259,6 @@ task("encodeApplyPresetsTestSafe").setAction(async (taskArgs, hre) => {
     __dirname,
     "..",
     "/presets-output/mainnet/ENS/test_safe_payload.json"
-  )
-  if (!existsSync(filePath)) {
-    // Create the directory structure if it doesn't exist
-    mkdirSync(path.dirname(filePath), { recursive: true })
-  }
-  // Write the JSON data to the file
-  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
-  console.log(`Transaction builder JSON written to  ${filePath}`)
-})
-
-task("encodeApplyPresetsTestKPK").setAction(async (taskArgs, hre) => {
-  const { config } = await processArgs(taskArgs, hre)
-  const txBatches = await encodeApplyPresetTxBuilder(
-    config.MODULE,
-    config.ROLE_IDS.MANAGER,
-    test_payload_kpk,
-    { AVATAR: config.AVATAR },
-    {
-      network: config.NETWORK as NetworkId,
-    }
-  )
-
-  const filePath = path.join(
-    __dirname,
-    "..",
-    "/presets-output/mainnet/ENS/test_payload_kpk.json"
   )
   if (!existsSync(filePath)) {
     // Create the directory structure if it doesn't exist
