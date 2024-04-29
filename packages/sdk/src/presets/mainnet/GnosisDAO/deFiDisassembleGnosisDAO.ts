@@ -5,19 +5,13 @@ import { HoldingsExitStrategy } from "../../helpers/ExitStrategies/HoldingsExitS
 import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
 import { AVATAR } from "../../placeholders"
-import { DAI, USDC, USDT, rETH, stETH, WETH, wstETH, aura, balancer, compound_v2, compound_v3, curve, uniswapv3 } from "../addresses"
+import { ankrETH, DAI, ETHx, USDC, USDT, rETH, stETH, WETH, wstETH, aura, balancer, compound_v2, compound_v3, curve, uniswapv3 } from "../addresses"
 import { RolePreset } from "../../types"
 import { allowErc20Approve } from "../../helpers/erc20"
 
 const preset = {
   network: 1,
   allow: [
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Lido
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    ...lidoExitStrategyAll(),
-
     //---------------------------------------------------------------------------------------------------------------------------------
     // Holdings
     //---------------------------------------------------------------------------------------------------------------------------------
@@ -227,6 +221,95 @@ const preset = {
     },
 
     //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V2
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V2 - USDC
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    // Withdrawing: sender redeems uint256 cTokens, it is called when MAX is withdrawn
+    allow.mainnet.compound_v2.cUSDC["redeem"](),
+
+    // Withdrawing: sender redeems cTokens in exchange for a specified amount of underlying asset (uint256), it is called when MAX isn't withdrawn
+    allow.mainnet.compound_v2.cUSDC["redeemUnderlying"](),
+
+    // Stop using as Collateral
+    allow.mainnet.compound_v2.comptroller["exitMarket"](compound_v2.cUSDC),
+
+    // Repay specified borrowed amount of underlying asset (uint256)
+    allow.mainnet.compound_v2.cUSDC["repayBorrow"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V2 - DAI
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    // Withdrawing: sender redeems uint256 cTokens, it is called when MAX is withdrawn
+    allow.mainnet.compound_v2.cDAI["redeem"](),
+
+    // Withdrawing: sender redeems cTokens in exchange for a specified amount of underlying asset (uint256), it is called when MAX isn't withdrawn
+    allow.mainnet.compound_v2.cDAI["redeemUnderlying"](),
+
+    // Stop using as Collateral
+    allow.mainnet.compound_v2.comptroller["exitMarket"](compound_v2.cDAI),
+
+    // Repay specified borrowed amount of underlying asset (uint256)
+    allow.mainnet.compound_v2.cDAI["repayBorrow"](),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V3
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V3 - USDC
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    // Withdraw/Borrow
+    allow.mainnet.compound_v3.cUSDCv3["withdraw"](USDC),
+
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Compound V3 - ETH
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    // Withdraw
+    {
+      targetAddress: compound_v3.MainnetBulker,
+      signature: "invoke(bytes32[],bytes[])",
+      params: {
+        [0]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000040",
+          "bytes32"
+        ), // Offset of bytes32[] from beginning 64=32*2
+        [1]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000080",
+          "bytes32"
+        ), // Offset of bytes[] from beginning 128=32*4
+        [2]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "bytes32"
+        ), // Length of bytes32[] = 1
+        [3]: staticEqual(
+          "0x414354494f4e5f57495448445241575f4e41544956455f544f4b454e00000000",
+          "bytes32"
+        ), // ACTION_WITHDRAW_NATIVE_TOKEN Encoded
+        [4]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "bytes32"
+        ), // Length of bytes[] = 1
+        [5]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000020",
+          "bytes32"
+        ), // Offset of the first element of the bytes[] from beginning of bytes[] 32=32*1
+        [6]: staticEqual(
+          "0x0000000000000000000000000000000000000000000000000000000000000060",
+          "bytes32"
+        ), // Length of the first element of the bytes[] 96=32*3
+        [7]: staticEqual(compound_v3.cUSDCv3, "address"),
+        [8]: staticEqual(AVATAR),
+      },
+    },
+
+    //---------------------------------------------------------------------------------------------------------------------------------
     // CONVEX
     //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -349,98 +432,15 @@ const preset = {
     allow.mainnet.curve.steth_ng_f_pool["exchange(int128,int128,uint256,uint256)"](),
 
     //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V2
+    // Lido
     //---------------------------------------------------------------------------------------------------------------------------------
 
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V2 - USDC
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Withdrawing: sender redeems uint256 cTokens, it is called when MAX is withdrawn
-    allow.mainnet.compound_v2.cUSDC["redeem"](),
-
-    // Withdrawing: sender redeems cTokens in exchange for a specified amount of underlying asset (uint256), it is called when MAX isn't withdrawn
-    allow.mainnet.compound_v2.cUSDC["redeemUnderlying"](),
-
-    // Stop using as Collateral
-    allow.mainnet.compound_v2.comptroller["exitMarket"](compound_v2.cUSDC),
-
-    // Repay specified borrowed amount of underlying asset (uint256)
-    allow.mainnet.compound_v2.cUSDC["repayBorrow"](),
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V2 - DAI
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Withdrawing: sender redeems uint256 cTokens, it is called when MAX is withdrawn
-    allow.mainnet.compound_v2.cDAI["redeem"](),
-
-    // Withdrawing: sender redeems cTokens in exchange for a specified amount of underlying asset (uint256), it is called when MAX isn't withdrawn
-    allow.mainnet.compound_v2.cDAI["redeemUnderlying"](),
-
-    // Stop using as Collateral
-    allow.mainnet.compound_v2.comptroller["exitMarket"](compound_v2.cDAI),
-
-    // Repay specified borrowed amount of underlying asset (uint256)
-    allow.mainnet.compound_v2.cDAI["repayBorrow"](),
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V3
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V3 - USDC
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Withdraw/Borrow
-    allow.mainnet.compound_v3.cUSDCv3["withdraw"](USDC),
-
-    //---------------------------------------------------------------------------------------------------------------------------------
-    // Compound V3 - ETH
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    // Withdraw
-    {
-      targetAddress: compound_v3.MainnetBulker,
-      signature: "invoke(bytes32[],bytes[])",
-      params: {
-        [0]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000040",
-          "bytes32"
-        ), // Offset of bytes32[] from beginning 64=32*2
-        [1]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000080",
-          "bytes32"
-        ), // Offset of bytes[] from beginning 128=32*4
-        [2]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-          "bytes32"
-        ), // Length of bytes32[] = 1
-        [3]: staticEqual(
-          "0x414354494f4e5f57495448445241575f4e41544956455f544f4b454e00000000",
-          "bytes32"
-        ), // ACTION_WITHDRAW_NATIVE_TOKEN Encoded
-        [4]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-          "bytes32"
-        ), // Length of bytes[] = 1
-        [5]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000020",
-          "bytes32"
-        ), // Offset of the first element of the bytes[] from beginning of bytes[] 32=32*1
-        [6]: staticEqual(
-          "0x0000000000000000000000000000000000000000000000000000000000000060",
-          "bytes32"
-        ), // Length of the first element of the bytes[] 96=32*3
-        [7]: staticEqual(compound_v3.cUSDCv3, "address"),
-        [8]: staticEqual(AVATAR),
-      },
-    },
+    ...lidoExitStrategyAll(),
 
     //---------------------------------------------------------------------------------------------------------------------------------
     // Uniswap V3 - Swaps
     //---------------------------------------------------------------------------------------------------------------------------------
-    ...allowErc20Approve([DAI, USDC, USDT, WETH, wstETH], [uniswapv3.ROUTER_2]),
+    ...allowErc20Approve([ankrETH, DAI, ETHx, USDC, USDT, WETH, wstETH], [uniswapv3.ROUTER_2]),
 
     {
       targetAddress: uniswapv3.ROUTER_2,
@@ -448,18 +448,11 @@ const preset = {
         "exactInputSingle((address,address,uint24,address,uint256,uint256,uint160))",
       params: {
         [0]: staticOneOf(
-          [
-            DAI,
-            USDC,
-            USDT,
-            WETH,
-            wstETH
-          ],
-          "address"
-        ),
+          [ankrETH, DAI, ETHx, USDC, USDT, WETH, wstETH], "address"),
         [1]: staticOneOf([DAI, USDC, USDT, WETH, wstETH], "address"),
         [3]: staticEqual(AVATAR),
       },
+      send: true,
     },
   ],
   placeholders: { AVATAR },

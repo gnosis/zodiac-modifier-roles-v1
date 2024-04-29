@@ -6,15 +6,14 @@ import {
   stETH,
   WETH,
   wstETH,
-  E_ADDRESS,
   aura,
   balancer,
-  cowswap,
   curve,
   uniswapv3
 } from "../addresses"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
 import { allowErc20Approve } from "../../helpers/erc20"
+import { HoldingsExitStrategy } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
 import { lidoExitStrategyAll } from "../../helpers/ExitStrategies/LidoExitStrategies"
 import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategies"
 import { AVATAR } from "../../placeholders"
@@ -24,6 +23,12 @@ import { allow } from "../../allow"
 const preset = {
   network: 1,
   allow: [
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Holdings
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    ...HoldingsExitStrategy(1), // 1 = mainnet
+
     //---------------------------------------------------------------------------------------------------------------------------------
     // Lido
     //---------------------------------------------------------------------------------------------------------------------------------
@@ -204,18 +209,11 @@ const preset = {
         "exactInputSingle((address,address,uint24,address,uint256,uint256,uint160))",
       params: {
         [0]: staticOneOf(
-          [
-            DAI,
-            USDC,
-            USDT,
-            WETH,
-            wstETH
-          ],
-          "address"
-        ),
+          [DAI, USDC, USDT, WETH, wstETH], "address"),
         [1]: staticOneOf([DAI, USDC, USDT, WETH, wstETH], "address"),
         [3]: staticEqual(AVATAR),
       },
+      send: true,
     },
   ],
   placeholders: { AVATAR },
