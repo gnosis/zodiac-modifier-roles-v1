@@ -12,6 +12,7 @@ import { encodeApplyPresetTxBuilder } from "../src/applyPreset"
 // import gnosisChainDeFiHarvestPreset from "../src/presets/gnosisChain/deFiHarvest"
 // import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManage"
 import mainnetDeFiDisassembleKPKPreset from "../src/presets/mainnet/KPK/deFiDisassembleKPK"
+import gnosisChainDeFiDisassembleKPKPreset from "../src/presets/gnosisChain/KPK/deFiDisassembleKPK"
 import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManageTest"
 import mainnetDeFiManageTestPreset from "../src/presets/mainnet/deFiManageTest"
 import { NetworkId } from "../src/types"
@@ -45,6 +46,25 @@ export const KPK_ADDRESSES = {
     DISASSEMBLER: "",
     SWAPPER: "",
     NETWORK: 1,
+    BRIDGED_SAFE: "0x0000000000000000000000000000000000000000",
+    ROLE_IDS: {
+      MANAGER: 1,
+      REVOKER: 2,
+      HARVESTER: 3,
+      DISASSEMBLER: 4,
+      SWAPPER: 5,
+    },
+  },
+
+  KPK_GNO: {
+    AVATAR: "0x58e6c7ab55Aa9012eAccA16d1ED4c15795669E1C",
+    MODULE: "0x31624fBEdE7e9F9F93a123F8BC9C030C98F32Ef4",
+    MANAGER: "0xA3801af0D95Ad8e751b378C50ac86a47986b0110", // Used as DISASSEMBLER
+    REVOKER: "",
+    HARVESTER: "",
+    DISASSEMBLER: "",
+    SWAPPER: "",
+    NETWORK: 100,
     BRIDGED_SAFE: "0x0000000000000000000000000000000000000000",
     ROLE_IDS: {
       MANAGER: 1,
@@ -253,6 +273,32 @@ task("encodeApplyPresetsDisassembleKPKmainnet").setAction(async (taskArgs, hre) 
     __dirname,
     "..",
     "/presets-output/mainnet/KPK/txDataDisassembleKPKmainnet.json"
+  )
+  if (!existsSync(filePath)) {
+    // Create the directory structure if it doesn't exist
+    mkdirSync(path.dirname(filePath), { recursive: true })
+  }
+  // Write the JSON data to the file
+  writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+  console.log(`Transaction builder JSON written to  ${filePath}`)
+})
+
+task("encodeApplyPresetsDisassembleKPKgnosis").setAction(async (taskArgs, hre) => {
+  const { config } = await processArgs(taskArgs, hre)
+  const txBatches = await encodeApplyPresetTxBuilder(
+    config.MODULE,
+    config.ROLE_IDS.MANAGER,
+    gnosisChainDeFiDisassembleKPKPreset,
+    { AVATAR: config.AVATAR },
+    {
+      network: config.NETWORK as NetworkId,
+    }
+  )
+
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "/presets-output/gnosis/KPK/txDataDisassembleKPKgnosis.json"
   )
   if (!existsSync(filePath)) {
     // Create the directory structure if it doesn't exist
