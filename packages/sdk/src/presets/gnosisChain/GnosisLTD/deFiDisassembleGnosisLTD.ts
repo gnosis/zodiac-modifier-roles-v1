@@ -1,7 +1,7 @@
 import { allow } from "../../allow"
 import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategies"
 import { balancerExitStrategy1 } from "../../helpers/ExitStrategies/BalancerExitStrategies"
-import { WstEthExitStrategy1 } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
+import { HoldingsExitStrategy, sDaiExitStrategy, WstEthExitStrategy1 } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
 import { AVATAR } from "../../placeholders"
 import { RolePreset } from "../../types"
 import { EURe, sDAI, USDC, USDT, WETH, wstETH, WXDAI, x3CRV, aura, balancer, curve, realt } from "../addresses"
@@ -15,6 +15,10 @@ const preset = {
     //---------------------------------------------------------------------------------------------------------------------------------
     // Holdings
     //---------------------------------------------------------------------------------------------------------------------------------
+
+    ...HoldingsExitStrategy(100), // 100 = Gnosis Chain
+
+    ...sDaiExitStrategy(100), // Only adds sDAI as buy and sell token
 
     ...WstEthExitStrategy1(100), // wstETH -> WETH
 

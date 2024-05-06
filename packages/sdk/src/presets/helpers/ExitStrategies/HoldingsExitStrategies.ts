@@ -707,6 +707,60 @@ export const WstEthExitStrategy1 = (
   return permissions
 }
 
+// IMPORTANT: THIS FUNCTION ONLY ADDS sDAI AS BOTH BUY AND SELL TOKEN. IF THIS PERMISSION IS NOT SHARED
+// WITH OTHER HOLDINGS STRATEGIES THEN IT'S USELESS.
+export const sDaiExitStrategy = (
+  blockchainId: NetworkId
+): PresetAllowEntry[] => {
+  const permissions: PresetAllowEntry[] = []
+
+  switch (blockchainId) {
+    case 1:
+      permissions.push(
+        ...allowErc20Approve(
+          [mainnetAddresses.sDAI],
+          [mainnetAddresses.cowswap.GPv2_VAULT_RELAYER]
+        ),
+
+        {
+          targetAddress: mainnetAddresses.cowswap.ORDER_SIGNER,
+          signature:
+            "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
+          params: {
+            [0]: staticEqual(mainnetAddresses.sDAI, "address"),
+            [1]: staticEqual(mainnetAddresses.sDAI, "address"),
+            [2]: staticEqual(AVATAR),
+          },
+          delegatecall: true,
+        }
+      )
+      break
+
+    case 100:
+      permissions.push(
+        ...allowErc20Approve(
+          [gnoAddresses.sDAI],
+          [gnoAddresses.cowswap.GPv2_VAULT_RELAYER]
+        ),
+
+        {
+          targetAddress: gnoAddresses.cowswap.ORDER_SIGNER,
+          signature:
+            "signOrder((address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32),uint32,uint256)",
+          params: {
+            [0]: staticEqual(gnoAddresses.sDAI, "address"),
+            [1]: staticEqual(gnoAddresses.sDAI, "address"),
+            [2]: staticEqual(AVATAR),
+          },
+          delegatecall: true,
+        }
+      )
+      break
+  }
+
+  return permissions
+}
+
 export const HoldingsExitStrategy = (
   blockchainId: NetworkId
 ): PresetAllowEntry[] => {

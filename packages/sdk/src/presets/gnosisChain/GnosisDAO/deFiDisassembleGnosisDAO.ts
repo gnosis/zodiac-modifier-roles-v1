@@ -3,7 +3,7 @@ import { network } from "hardhat"
 import { allow } from "../../allow"
 import { auraExitStrategy2 } from "../../helpers/ExitStrategies/AuraExitStrategies"
 import { balancerExitStrategy1 } from "../../helpers/ExitStrategies/BalancerExitStrategies"
-import { HoldingsExitStrategy, WstEthExitStrategy1 } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
+import { HoldingsExitStrategy, sDaiExitStrategy, WstEthExitStrategy1 } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
 import { AVATAR } from "../../placeholders"
 import { RolePreset } from "../../types"
@@ -13,7 +13,6 @@ import {
   sDAI,
   USDC,
   USDT,
-  WBTC,
   WETH,
   wstETH,
   WXDAI,
@@ -33,6 +32,8 @@ const preset = {
     //---------------------------------------------------------------------------------------------------------------------------------
 
     ...HoldingsExitStrategy(100), // 100 = Gnosis Chain
+
+    ...sDaiExitStrategy(100), // Only adds sDAI as buy and sell token
 
     ...WstEthExitStrategy1(100), // wstETH -> WETH
 

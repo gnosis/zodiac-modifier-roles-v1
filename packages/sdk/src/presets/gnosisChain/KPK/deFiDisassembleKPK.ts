@@ -4,11 +4,22 @@ import { RolePreset } from "../../types"
 import { EURe, sDAI, USDC, USDT, WETH, wstETH, WXDAI, x3CRV, balancer, curve } from "../addresses"
 import { allowErc20Approve } from "../../helpers/erc20"
 import { staticEqual, staticOneOf } from "../../helpers/utils"
+import { HoldingsExitStrategy, sDaiExitStrategy, WstEthExitStrategy1 } from "../../helpers/ExitStrategies/HoldingsExitStrategies"
 
 
 const preset = {
   network: 100,
   allow: [
+    //---------------------------------------------------------------------------------------------------------------------------------
+    // Holdings
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    ...HoldingsExitStrategy(100), // 100 = Gnosis Chain
+
+    ...sDaiExitStrategy(100), // Only adds sDAI as buy and sell token
+
+    ...WstEthExitStrategy1(100), // wstETH -> WETH
+
     //---------------------------------------------------------------------------------------------------------------------------------
     // Balancer
     //---------------------------------------------------------------------------------------------------------------------------------
