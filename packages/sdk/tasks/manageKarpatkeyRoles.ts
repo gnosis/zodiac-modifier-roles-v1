@@ -9,12 +9,15 @@ import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { Roles } from "../../evm/typechain-types"
 import addMembers from "../src/addMembers"
 import { encodeApplyPresetTxBuilder } from "../src/applyPreset"
-// import gnosisChainDeFiHarvestPreset from "../src/presets/gnosisChain/deFiHarvest"
-// import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManage"
+
+// KPK in Mainnet
 import mainnetDeFiDisassembleKPKPreset from "../src/presets/mainnet/KPK/deFiDisassembleKPK"
+import mainnetDeFiManageTestPreset from "../src/presets/mainnet/deFiManageTest"
+
+// KPK in Gnosis Chain
 import gnosisChainDeFiDisassembleKPKPreset from "../src/presets/gnosisChain/KPK/deFiDisassembleKPK"
 import gnosisChainDeFiManagePreset from "../src/presets/gnosisChain/deFiManageTest"
-import mainnetDeFiManageTestPreset from "../src/presets/mainnet/deFiManageTest"
+
 import { NetworkId } from "../src/types"
 
 interface Config {

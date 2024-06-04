@@ -231,6 +231,7 @@ export default defineConfig({
       omnibridge: "0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d",
       xdai_bridge: "0x7301CFA0e1756B71869E93d4e4Dca5c7d0eb0AA6",
       wxdai: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+      sDAI: "0xaf204776c7245bF4147c2612BF6e5972Ee483701",
     },
   },
 })

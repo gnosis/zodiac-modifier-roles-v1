@@ -24,6 +24,7 @@ import gnosisDeFiHarvestGnosisDAOPreset from "../src/presets/gnosisChain/GnosisD
 import gnosisDeFiManageGnosisDAOPreset from "../src/presets/gnosisChain/GnosisDAO/deFiManageGnosisDAO"
 import gnosisDeFiRevokeGnosisDAOPreset from "../src/presets/gnosisChain/GnosisDAO/deFiRevokeGnosisDAO"
 import gnosisDeFiSwapGnosisDAOPreset from "../src/presets/gnosisChain/GnosisDAO/deFiSwapGnosisDAO"
+import gnosisDeFiIncentivizerKPKPreset from "../src/presets/gnosisChain/GnosisDAO/deFiIncentivizerGnosisDAO"
 import test_preset from "../src/presets/gnosisChain/GnosisDAO/test_preset"
 
 // GnosisLTD in Mainnet
@@ -762,6 +763,35 @@ task("encodeApplyPresetSwapGnosisDAOgnosis").setAction(
       __dirname,
       "..",
       "/presets-output/gnosis/GnosisDAO/txDataSwapGnosisDAOgnosis.json"
+    )
+    // Check if the file exists
+    if (!existsSync(filePath)) {
+      // Create the directory structure if it doesn't exist
+      mkdirSync(path.dirname(filePath), { recursive: true })
+    }
+    // Write the JSON data to the file
+    writeFileSync(filePath, JSON.stringify(txBatches, undefined, 2))
+    console.log(`Transaction builder JSON written to  ${filePath}`)
+  }
+)
+
+task("encodeApplyPresetIncentivizeGnosisDAOgnosis").setAction(
+  async (taskArgs, hre) => {
+    const { config } = await processArgs(taskArgs, hre)
+    const txBatches = await encodeApplyPresetTxBuilder(
+      config.MODULE,
+      2,
+      gnosisDeFiIncentivizerKPKPreset,
+      { AVATAR: config.AVATAR },
+      {
+        network: config.NETWORK as NetworkId,
+      }
+    )
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "/presets-output/gnosis/GnosisDAO/txDataIncentivizeGnosisDAOgnosis.json"
     )
     // Check if the file exists
     if (!existsSync(filePath)) {
