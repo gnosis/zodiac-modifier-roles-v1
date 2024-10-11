@@ -10,6 +10,7 @@ const ARBISCAN_KEY = process.env.REACT_APP_ARBISCAN_KEY as string
 const BSCSCAN_KEY = process.env.REACT_APP_BSCSCAN_KEY as string
 const OPTIMISTICSCAN_KEY = process.env.REACT_APP_OPTIMISTICSCAN_KEY as string
 const SNOWTRACE_KEY = process.env.REACT_APP_SNOWTRACE_KEY as string
+const BASESCAN_KEY = process.env.REACT_APP_BASESCAN_KEY as string
 
 if (!ETHERSCAN_KEY) throw new Error("ETHERSCAN_KEY env is not set")
 if (!GNOSISSCAN_KEY) throw new Error("GNOSISSCAN_KEY env is not set")
@@ -18,6 +19,7 @@ if (!ARBISCAN_KEY) throw new Error("ARBISCAN_KEY env is not set")
 if (!BSCSCAN_KEY) throw new Error("BSCSCAN_KEY env is not set")
 if (!OPTIMISTICSCAN_KEY) throw new Error("OPTIMISTICSCAN_KEY env is not set")
 if (!SNOWTRACE_KEY) throw new Error("SNOWTRACE_KEY env is not set")
+if (!BASESCAN_KEY) throw new Error("BASESCAN_KEY env is not set")
 
 const explorerConfig: Record<Network, ExplorerConfig> = {
   [Network.MAINNET]: {
@@ -54,6 +56,10 @@ const explorerConfig: Record<Network, ExplorerConfig> = {
   [Network.OPTIMISM]: {
     apiUrl: "https://api-optimistic.etherscan.io/api",
     apiKey: OPTIMISTICSCAN_KEY,
+  },
+  [Network.BASE]: {
+    apiUrl: "https://api.basescan.org/api",
+    apiKey: BASESCAN_KEY,
   },
   [Network.EWT]: {
     apiUrl: "https://explorer.energyweb.org/api",
