@@ -11,6 +11,9 @@ const SUBGRAPH = {
     "https://airlock.gnosisguild.org/api/v1/subgraph/JDFgdGqUsDci3yv5HgEhFDFT65hmAtnnGgp4tN6nksGG",
   [42161]:
     "https://airlock.gnosisguild.org/api/v1/subgraph/5TLTw4whZvjbtQmzomRHJDrCX9VQ32mHSdrPN7oxdn4v",
+
+  [8453]:
+    "https://airlock.gnosisguild.org/api/v1/subgraph/DJTPvUAk3iyZzDhXhoFwH18qiUJDyS4LXDU9EfWBLEWB",
   // [43114]:
   //   "https://airlock.gnosisguild.org/api/v1/subgraph/6pVVa2Q53HRqQahiZLovV5AUN48nK28Cym6TRbw4ABP8",
 }
